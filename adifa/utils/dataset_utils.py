@@ -1,12 +1,11 @@
 import os
-from datetime import datetime
 
 from flask import current_app
 import zarr
 
 from adifa import db
 from adifa import models
-from adifa.utils.adata_utils import update_obs_ordering
+from adifa.utils.adata_utils import get_annotations, update_obs_ordering
 
 
 def auto_discover():
@@ -27,7 +26,7 @@ def auto_discover():
                 current_app.logger.warn("Skipping " + zarr_dir)
                 continue
 
-            annotations = adata_utils.get_annotations(adata)
+            annotations = get_annotations(adata)
             # generate hash
             current_app.logger.info("Hashing " + zarr_dir)
             # hash = adata["X"].hexdigest()  # we don't impliment hash usage, can be removed
