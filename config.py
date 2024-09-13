@@ -17,5 +17,9 @@ class Config(object):
     HOME_URL = os.environ.get("HOME_URL") or False
     KEEP_OBS_ORDER = os.environ.get("KEEP_OBS_ORDER", "False").lower() in ("1", "true")
     TRUNCATE_OBS = os.environ.get("TRUNCATE_OBS", "True").lower() in ("1", "true")
+    OBS_ORDER_FROM_DB = os.environ.get("OBS_ORDER_FROM_DB", "True").lower() in (
+        "1",
+        "true",
+    )
     JSONIFY_PRETTYPRINT_REGULAR = False
     JSON_SORT_KEYS = False

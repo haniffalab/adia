@@ -6,7 +6,7 @@ import zarr
 
 from adifa import db
 from adifa import models
-from adifa.utils import adata_utils
+from adifa.utils.adata_utils import update_obs_ordering
 
 
 def auto_discover():
@@ -61,7 +61,11 @@ def auto_discover():
             else:
                 record.filename = zarr_dir
                 record.published = 1
-                record.data_obs = annotations.get("obs")
+                record.data_obs = (
+                    update_obs_ordering(annotations.get("obs"), record.data_uns)
+                    if current_app.config.get("OBS_ORDER_FROM_DB")
+                    else annotations.get("obs")
+                )
                 record.data_obsm = annotations.get("obsm")
                 # record.genes_deg = adata_utils.get_degs(adata)
                 record.data_var = annotations.get("var")

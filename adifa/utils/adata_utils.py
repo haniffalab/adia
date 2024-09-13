@@ -4,6 +4,7 @@ from flask import current_app
 from sqlalchemy import exc
 import numpy as np
 import pandas as pd
+import logging
 
 from adifa import models
 from adifa.resources.errors import (
@@ -127,6 +128,19 @@ def get_annotations(adata):
     annotations["var"] = list(get_group_index(adata["var"])[:])
 
     return annotations
+
+
+def update_obs_ordering(obs: dict, uns: dict):
+    OBS_GROUPING = "column_ordering"
+    obs_cat = {}
+    if OBS_GROUPING in uns.keys():
+        logging.info("Updating obs ordering")
+        for k in uns[OBS_GROUPING]:
+            for v in uns[OBS_GROUPING][k]:
+                obs_cat[v] = k
+        for o in obs:
+            obs[o]["category"] = obs_cat.get(obs[o]["name"], "main")
+    return obs
 
 
 def get_degs(adata):
