@@ -26,8 +26,8 @@ Clone the repository
 
 ::
 
-    $ git clone git@github.com:haniffalab/sci-adifa.git
-    $ cd sci-adifa
+    $ git clone git@github.com:haniffalab/adifa.git
+    $ cd adifa
 
 Create a virtualenv and activate it
 
