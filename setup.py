@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 with open("README.md", "rb") as fh:
     long_description = fh.read().decode()
@@ -11,9 +11,9 @@ with open("requirements-extra.txt") as fh:
 
 setup(
     name="adifa",
-    version="0.0.2",
+    version="1.1.0",
     packages=find_packages(),
-    url="https://haniffalab.github.io/sci-adifa",
+    url="https://haniffalab.github.io/adifa",
     license="MIT",
     author="Haniffa Lab",
     author_email="rse@haniffalab.com",

@@ -21,7 +21,7 @@ The default configuration for Adifa is defined in the ``.env`` file in the `repo
     API_SERVER = '/'
     DATA_PATH = './instance'
 
-.. _repository root: https://github.com/haniffalab/sci-adifa/blob/main/.env
+.. _repository root: https://github.com/haniffalab/adifa/blob/main/.env
 
 Overriding the Configuration
 ----------------------------
