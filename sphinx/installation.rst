@@ -26,8 +26,8 @@ Clone the repository
 
 ::
 
-    $ git clone git@github.com:haniffalab/sci-adifa.git
-    $ cd sci-adifa
+    $ git clone git@github.com:haniffalab/adifa.git
+    $ cd adifa
 
 Create a virtualenv and activate it
 
@@ -71,7 +71,6 @@ Test
 
 ::
 
-    $ pip install '.[test]'
     $ pip install pytest coverage
     $ pytest
 
@@ -79,5 +78,5 @@ Run with coverage report::
 
     $ coverage run -m pytest
     $ coverage report
-    $ coverage html  # open htmlcov/index.html in a browser
+    $ coverage html
 

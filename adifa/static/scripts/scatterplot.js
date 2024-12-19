@@ -175,12 +175,14 @@
         let url
         if (colorScaleType === 'gene') {
           url = API_SERVER + 'api/v1/labels?gene=' + colorScaleKey + '&datasetId=' + datasetId
+        } else if (colorScaleType === 'prot') {
+          url = API_SERVER + 'api/v1/labels?gene=' + colorScaleKey + '&datasetId=' + datasetId + '&modality=prot'
         } else {
           url = API_SERVER + 'api/v1/labels?obs=' + colorScaleKey + '&datasetId=' + datasetId
         }
         const requestLabels = doAjax(url, false)
         if (requestLabels.status === 200) {
-          if (colorScaleType === 'gene') {
+          if (colorScaleType === 'gene' || colorScaleType === 'prot') {
             active.min = 0
             active.max = getMax(requestLabels.responseJSON)
           }
@@ -213,12 +215,30 @@
                 .attr('type', 'button')
                 .attr('id', 'gene-deg-' + colorScaleKey)
                 .attr('data-gene', colorScaleKey)
+                .attr('data-modality', 'rna')
                 .addClass('btn-gene-select btn btn-outline-info btn-sm active')
                 .text(colorScaleKey)
             )
           } else if (!$('#gene-deg-' + escapeSelector(colorScaleKey)).hasClass('active')) {
             $('#gene-deg-' + escapeSelector(colorScaleKey)).addClass('active')
           }
+        } else if (colorScaleType === 'prot') {
+          if (!$('#gene-deg-' + escapeSelector(colorScaleKey)).length) {
+            $('#search-protein-selected').append(
+              $('<button/>')
+                .attr('type', 'button')
+                .attr('id', 'gene-deg-' + colorScaleKey)
+                .attr('data-gene', colorScaleKey)
+                .attr('data-modality', 'rna')
+                .addClass('btn-gene-select btn btn-outline-info btn-sm active')
+                .text(colorScaleKey)
+            )
+          } else if (!$('#gene-deg-' + escapeSelector(colorScaleKey)).hasClass('active')) {
+            $('#gene-deg-' + escapeSelector(colorScaleKey)).addClass('active')
+          }
+        } else if (colorScaleId) {
+          $('#collapse' + escapeSelector(colorScaleId)).collapse('show')
+          $('#colourise' + escapeSelector(colorScaleId)).addClass('active')
         }
       } else { // decolor
         $('.colourise').removeClass('active')
@@ -227,10 +247,6 @@
         $('#color-scale').addClass('disabled')
         $('.btn-gene-select').removeClass('active')
       }
-      if (colorScaleId) {
-        $('#collapse' + colorScaleId).collapse('show')
-        $('#colourise' + colorScaleId).addClass('active')
-      }
 
       let myColor
       const myRadius = function () {
@@ -238,13 +254,13 @@
       }
 
       if (colorScaleType === 'categorical') {
-        const arr = active.dataset.data_obs[colorScaleKey.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()].values
+        const arr = active.dataset.data_obs[colorScaleId].values
         const catColors = d3.scaleOrdinal().domain($.map(arr, (v, k) => v)).range(['#2f4f4f', '#2e8b57', '#7f0000', '#808000', '#483d8b', '#008000', '#000080', '#8b008b', '#b03060', '#ff0000', '#00ced1', '#ff8c00', '#ffff00', '#00ff00', '#8a2be2', '#00ff7f', '#dc143c', '#00bfff', '#f4a460', '#0000ff', '#f08080', '#adff2f', '#d8bfd8', '#ff00ff', '#1e90ff', '#90ee90', '#ff1493', '#7b68ee', '#ee82ee', '#ffdab9'])
         const checkboxCheck = {}
         for (const k in arr) {
           if (Object.prototype.hasOwnProperty.call(arr, k)) {
-            document.getElementById(colorScaleKey.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() + '-' + k).style.backgroundColor = catColors(arr[k])
-            checkboxCheck[arr[k]] = $('#obs-list-' + colorScaleKey.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() + ' input[name="obs-' + arr[k] + '"]').is(':checked')
+            document.getElementById(colorScaleId + '-' + k).style.backgroundColor = catColors(arr[k])
+            checkboxCheck[arr[k]] = $('#obs-list-' + escapeSelector(colorScaleId) + ' input[name="obs-' + escapeSelector(arr[k]) + '"]').is(':checked')
           }
         }
         myColor = function (d) { // Public Method
@@ -262,10 +278,10 @@
         //   }
         // }
       } else if (colorScaleType === 'continuous') {
-        myColor = d3.scaleSequential().domain([active.dataset.data_obs[colorScaleKey.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()].min, active.dataset.data_obs[colorScaleKey.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()].max]).interpolator(d3.interpolateViridis)
+        myColor = d3.scaleSequential().domain([active.dataset.data_obs[colorScaleId].min, active.dataset.data_obs[colorScaleId].max]).interpolator(d3.interpolateViridis)
         $('#continuous-legend').empty()
         createLegend(myColor)
-      } else if (colorScaleType === 'gene') {
+      } else if (colorScaleType === 'gene' || colorScaleType === 'prot') {
         myColor = d3.scaleSequential().domain([active.min, active.max]).interpolator(d3.interpolateViridis)
         $('#continuous-legend').empty()
         createLegend(myColor)
@@ -359,11 +375,11 @@
       // A simpler way to do the above, but possibly slower. keep in mind the legend width is stretched because the width attr of the canvas is 1
       // See http://stackoverflow.com/questions/4899799/whats-the-best-way-to-set-a-single-pixel-in-an-html5-canvas
       /*
-              d3.range(legendheight).forEach(function(i) {
-              ctx.fillStyle = colorscale(legendscale.invert(i));
-              ctx.fillRect(0,i,1,1);
-              });
-              */
+            d3.range(legendheight).forEach(function(i) {
+            ctx.fillStyle = colorscale(legendscale.invert(i));
+            ctx.fillRect(0,i,1,1);
+            });
+            */
 
       const legendaxis = d3.axisRight()
         .scale(legendscale)
@@ -537,8 +553,8 @@
           path: window.location.pathname
         })
 
-        if ((colorScaleKey && colorScaleType !== 'gene' && !(colorScaleKey.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() in active.dataset.data_obs)) ||
-        (colorScaleKey && colorScaleType === 'gene' && active.dataset.data_var.indexOf(colorScaleKey) === -1)
+        if ((colorScaleId && colorScaleType !== 'gene' && colorScaleType !== 'prot' && !(colorScaleId in active.dataset.data_obs)) ||
+        (colorScaleKey && (colorScaleType === 'gene' || colorScaleType === 'prot') && active.dataset.data_var.indexOf(colorScaleKey) === -1)
         ) {
           colorScaleKey = null
           colorScaleId = null
@@ -606,6 +622,11 @@
           colorScaleKey = el.selectedItems[0]
           colorScaleId = 0
           colorScaleType = 'gene'
+        } else if ($(el).data('modality') === 'prot') {
+          colorScaleKey = $(el).text()
+          colorScaleId = 0
+          colorScaleType = 'prot'
+          $(el).addClass('active')
         } else if ($(el).hasClass('btn-gene-select')) {
           colorScaleKey = $(el).text()
           colorScaleId = 0
@@ -705,10 +726,11 @@
       // closeOnSelect: false,
       sorter: data => data.sort((a, b) => a.text.localeCompare(b.text)),
       ajax: {
-        url: API_SERVER + 'api/v1/datasets/' + datasetId + '/search/genes',
+        url: API_SERVER + 'api/v1/datasets/' + datasetId + '/search/features',
         data: function (params) {
           const query = {
             search: params.term,
+            modality: 'rna',
             type: 'public'
           }
 
@@ -726,6 +748,41 @@
             .attr('type', 'button')
             .attr('id', 'gene-deg-' + data.id)
             .attr('data-gene', data.id)
+            .attr('data-modality', 'rna')
+            .addClass('btn-gene-select btn btn-outline-info btn-sm')
+            .text(data.id)
+        )
+        $("button[data-gene='" + escapeSelector(data.id) + "']").trigger('click')
+      }
+    })
+
+    $('.select2-protein-search').select2({
+      // closeOnSelect: false,
+      sorter: data => data.sort((a, b) => a.text.localeCompare(b.text)),
+      ajax: {
+        url: API_SERVER + 'api/v1/datasets/' + datasetId + '/search/features',
+        data: function (params) {
+          const query = {
+            search: params.term,
+            modality: 'prot',
+            type: 'public'
+          }
+
+          // Query parameters will be ?search=[term]&type=public
+          return query
+        }
+      }
+    }).on('select2:select', function (e) {
+      const data = e.params.data
+      if ($('#gene-deg-' + escapeSelector(data.id)).length) {
+        $("button[data-gene='" + data.id + "']").trigger('click')
+      } else {
+        $('#search-protein-selected').append(
+          $('<button/>')
+            .attr('type', 'button')
+            .attr('id', 'gene-deg-' + data.id)
+            .attr('data-gene', data.id)
+            .attr('data-modality', 'prot')
             .addClass('btn-gene-select btn btn-outline-info btn-sm')
             .text(data.id)
         )

@@ -1,19 +1,15 @@
 |Tests| |Sphinx| |Coverage| |Python| |DOI|
  
-.. |Tests| image:: https://github.com/haniffalab/sci-adifa/actions/workflows/test-coverage.yml/badge.svg
-   :target: https://github.com/haniffalab/sci-adifa/actions/workflows/test-coverage.yml
-.. |Sphinx| image:: https://github.com/haniffalab/sci-adifa/actions/workflows/sphinx-build.yml/badge.svg
-   :target: https://github.com/haniffalab/sci-adifa/actions/workflows/sphinx-build.yml
-.. |Coverage| image:: https://codecov.io/gh/haniffalab/sci-adifa/branch/main/graph/badge.svg?token=SM1J6FVZ5C
-   :target: https://codecov.io/gh/haniffalab/sci-adifa
+.. |Tests| image:: https://github.com/haniffalab/adifa/actions/workflows/test-coverage.yml/badge.svg
+   :target: https://github.com/haniffalab/adifa/actions/workflows/test-coverage.yml
+.. |Sphinx| image:: https://github.com/haniffalab/adifa/actions/workflows/sphinx-build.yml/badge.svg
+   :target: https://github.com/haniffalab/adifa/actions/workflows/sphinx-build.yml
+.. |Coverage| image:: https://codecov.io/gh/haniffalab/adifa/branch/main/graph/badge.svg?token=SM1J6FVZ5C
+   :target: https://codecov.io/gh/haniffalab/adifa
 .. |Python| image:: https://img.shields.io/badge/python-3.8-blue
    :target: https://python.org
 .. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.5824895.svg
    :target: https://doi.org/10.5281/zenodo.5824895
-
-.. raw:: html
-
-    <h2>SINGLE CELL INSIGHTS</h2>
 
 Adifa - Annotated Data in Flask App
 ===================================
@@ -30,8 +26,8 @@ opening an issue or creating a pull request, please take a look at our `contribu
 If Adifa is useful for your research, consider :ref:`citing the software <citing>`.
 
 .. _Discourse: https://discourse.group/
-.. _documentation: https://haniffalab.github.io/sci-adifa
-.. _contributing guide: https://github.com/haniffalab/sci-adifa/blob/main/CONTRIBUTING.md
+.. _documentation: https://haniffalab.github.io/adifa
+.. _contributing guide: https://github.com/haniffalab/adifa/blob/main/CONTRIBUTING.md
 .. _Flask: https://flask.palletsprojects.com/
 .. _Annotated Data: https://anndata.readthedocs.io/
 .. _deck.gl: https://deck.gl/

@@ -10,7 +10,7 @@ from adifa.resources.datasets import (
     Datasets,
     DiseaseGeneList,
     Labels,
-    SearchGenes,
+    SearchFeatures,
     SearchDiseases,
 )
 from adifa.resources.plotting import Matrixplot
@@ -28,6 +28,6 @@ api.add_resource(Dataset, "/datasets/<id>")
 api.add_resource(Datasets, "/datasets")
 api.add_resource(DiseaseGeneList, "/datasets/<id>/diseases")
 api.add_resource(Labels, "/labels")
-api.add_resource(SearchGenes, "/datasets/<id>/search/genes")
+api.add_resource(SearchFeatures, "/datasets/<id>/search/features")
 api.add_resource(SearchDiseases, "/datasets/<id>/search/diseases")
 api.add_resource(Matrixplot, "/datasets/<int:id>/plotting/matrixplot")

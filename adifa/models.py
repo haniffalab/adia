@@ -1,3 +1,4 @@
+from email.policy import default
 import os
 from datetime import datetime
 
@@ -11,9 +12,10 @@ class Dataset(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     published = db.Column(db.Boolean, default=False, nullable=False)
     filename = db.Column(db.String(120), nullable=False)
-    hash = db.Column(db.String(120), unique=True, nullable=False)
+    hash = db.Column(db.String(120), nullable=False)
     title = db.Column(db.String(120), nullable=False)
     desc = db.Column(db.String(500), nullable=True)
+    modality = db.Column(db.String(120), nullable=False)
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     date_modified = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     data_obs = db.Column(db.JSON, default={})
@@ -43,6 +45,7 @@ class Dataset(db.Model):
             "size": os.path.getsize(
                 os.path.join(current_app.config.get("DATA_PATH"), self.filename)
             ),
+            "modality": self.modality,
             "data_obs": self.data_obs,
             "data_obsm": self.data_obsm,
             "data_var": self.data_var,

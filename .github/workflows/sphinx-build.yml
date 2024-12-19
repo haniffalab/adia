@@ -18,6 +18,8 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
+      - name: Set environment variable for sklearn
+        run: echo "SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL=True" >> $GITHUB_ENV
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -32,7 +34,7 @@ jobs:
       - name: Deploy to gh-pages
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
-          branch: main
+          branch: gh-pages
           folder: sphinx/_build/html
           target-folder: docs
           clean: true

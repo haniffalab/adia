@@ -14,3 +14,4 @@ build/
 *~
 sphinx/_build
 node_modules/
+tests/test.sqlite

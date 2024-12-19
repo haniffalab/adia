@@ -16,6 +16,7 @@
     // private variables
     const widthParent = $('#' + settings.containerId).parent().width()
     const datasetId = this.attr('data-datasetId')
+    const modality = this.attr('data-modality')
     let xhrPool = []
     const active = {
       dataset: {},
@@ -127,6 +128,10 @@
     }
 
     const loadData = function () {
+      if (modality === 'muon') {
+        showError('Select a modality with expression matrix to plot.')
+        return
+      }
       if (!colorScaleKey) {
         showMessage('Please select a group from the list of observations')
         return
@@ -142,7 +147,7 @@
       }).join('&')
 
       $.when(
-        doAjax(API_SERVER + 'api/v1/datasets/' + datasetId + '/plotting/matrixplot?groupby=' + colorScaleKey + '&' + markersQuery).then(function (data) {
+        doAjax(API_SERVER + 'api/v1/datasets/' + datasetId + '/plotting/matrixplot?groupby=' + colorScaleKey + '&' + markersQuery + '&modality=' + modality).then(function (data) {
           // update active plot data
           active.data = data
           active.dataframe = transform(data.values_df)
@@ -178,6 +183,9 @@
         $('#color-scale-value').removeClass('d-none')
         $('#color-scale').removeClass('disabled')
         $('#color-scale-remove').removeClass('d-none')
+        if (colorScaleId) {
+          $('#collapse' + colorScaleId).collapse('show')
+        }
       } else { // decolor
         $('.colourise').removeClass('active')
         $('#color-scale-remove').addClass('d-none')
@@ -185,15 +193,15 @@
         $('#color-scale').addClass('disabled')
         $('.btn-gene-select').removeClass('active')
       }
-      if (colorScaleId) {
-        $('#collapse' + colorScaleId).collapse('show')
-      }
       if (varList.length) {
+        console.log(active.dataset)
+        const varType = active.dataset.modality === 'prot' ? 'protein' : 'genes'
+        console.log(varType)
         varList.forEach(function (v) {
-          if ($("button[data-gene='" + escapeSelector(v) + "']").length) {
-            $("button[data-gene='" + escapeSelector(v) + "']").addClass('active')
+          if ($('#gene-deg-' + escapeSelector(v)).length) {
+            $('#gene-deg-' + escapeSelector(v)).addClass('active')
           } else {
-            $('#search-genes-selected').append(
+            $('#search-' + varType + '-selected').append(
               $('<button/>')
                 .attr('type', 'button')
                 .attr('id', 'gene-deg-' + v)
@@ -213,7 +221,7 @@
       } else {
         myGroups = []
         active.data.categories.forEach(function (item, index) {
-          if ($('#obs-list-' + colorScaleKey.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() + ' input[name="obs-' + escapeSelector(item) + '"]').is(':checked')) {
+          if ($('#obs-list-' + colorScaleId + ' input[name="obs-' + escapeSelector(item) + '"]').is(':checked')) {
             myGroups.push(item)
           }
         })
@@ -436,11 +444,11 @@
       // A simpler way to do the above, but possibly slower. Keep in mind the legend width is stretched because the width attr of the canvas is 1
       // See http://stackoverflow.com/questions/4899799/whats-the-best-way-to-set-a-single-pixel-in-an-html5-canvas
       /*
-              d3.range(legendheight).forEach(function(i) {
-                  ctx.fillStyle = colorscale(legendscale.invert(i));
-                  ctx.fillRect(0,i,1,1);
-              });
-              */
+          d3.range(legendheight).forEach(function(i) {
+              ctx.fillStyle = colorscale(legendscale.invert(i));
+              ctx.fillRect(0,i,1,1);
+          });
+          */
 
       const legendaxis = d3.axisBottom()
         .scale(legendscale)
@@ -571,7 +579,7 @@
         // update active dataset
         active.dataset = d
 
-        if (colorScaleKey && !(colorScaleKey.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() in active.dataset.data_obs)) {
+        if (colorScaleId && !(colorScaleId in active.dataset.data_obs)) {
           colorScaleKey = null
           colorScaleId = null
           Cookies.remove('ds' + datasetId + '-obs-name', {
@@ -683,10 +691,11 @@
       // closeOnSelect: false,
       sorter: data => data.sort((a, b) => a.text.localeCompare(b.text)),
       ajax: {
-        url: API_SERVER + 'api/v1/datasets/' + datasetId + '/search/genes',
+        url: API_SERVER + 'api/v1/datasets/' + datasetId + '/search/features',
         data: function (params) {
           const query = {
             search: params.term,
+            modality: 'rna',
             type: 'public'
           }
 
@@ -702,6 +711,39 @@
             .attr('type', 'button')
             .attr('id', 'gene-deg-' + data.id)
             .attr('data-gene', data.id)
+            .attr('data-modality', 'rna')
+            .addClass('btn-gene-select btn btn-outline-info btn-sm')
+            .text(data.id)
+        )
+        $("button[data-gene='" + escapeSelector(data.id) + "']").trigger('click')
+      }
+    })
+
+    $('.select2-protein-search').select2({
+      // closeOnSelect: false,
+      sorter: data => data.sort((a, b) => a.text.localeCompare(b.text)),
+      ajax: {
+        url: API_SERVER + 'api/v1/datasets/' + datasetId + '/search/features',
+        data: function (params) {
+          const query = {
+            search: params.term,
+            modality: 'prot',
+            type: 'public'
+          }
+
+          // Query parameters will be ?search=[term]&type=public
+          return query
+        }
+      }
+    }).on('select2:select', function (e) {
+      const data = e.params.data
+      if (!$('#gene-deg-' + escapeSelector(data.id)).length) {
+        $('#search-protein-selected').append(
+          $('<button/>')
+            .attr('type', 'button')
+            .attr('id', 'gene-deg-' + data.id)
+            .attr('data-gene', data.id)
+            .attr('data-modality', 'prot')
             .addClass('btn-gene-select btn btn-outline-info btn-sm')
             .text(data.id)
         )

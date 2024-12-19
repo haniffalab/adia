@@ -20,6 +20,14 @@ Docker Builds
 Sphinx
 ------
 
+Ensure dependencies are installed.
+
+::
+
+    $ pip install sphinx sphinx_rtd_theme
+
+Build the Sphinx documentation.
+
 ::
 
     $ cd sphinx

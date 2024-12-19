@@ -2,6 +2,8 @@ import os
 import sys
 
 import click
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 from flask import Flask, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy, inspect
 from flask.cli import with_appcontext
@@ -66,6 +68,17 @@ def create_app(test_config=None):
             )
         )
 
+    # Sentry
+    if os.environ.get("SENTRY_DSN") is not None:
+        sentry_sdk.init(
+            dsn=os.environ.get("SENTRY_DSN"),
+            integrations=[
+                FlaskIntegration(),
+            ],
+            environment=os.environ.get("FLASK_ENV"),
+            traces_sample_rate=1.0,
+        )
+
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
@@ -125,6 +138,7 @@ def create_app(test_config=None):
             "datasets": models.Dataset.query.with_entities(
                 models.Dataset.id,
                 models.Dataset.title,
+                models.Dataset.modality,
                 models.Dataset.published,
                 models.Dataset.desc,
                 models.Dataset.pub_author,
@@ -151,9 +165,11 @@ def create_app(test_config=None):
     @click.command("init-db")
     @with_appcontext
     def init_db_command():
+        click.echo(click.style("Starting...", fg="green"))
         """Create new tables."""
         db.create_all()
-        click.echo("Initialized the database.")
+        click.echo(click.style("Initialized the database", fg="blue"))
+        click.echo(click.style("Finished...", fg="green"))
 
     @click.command("clear-init-db")
     @with_appcontext
@@ -161,15 +177,28 @@ def create_app(test_config=None):
         """Clear existing tables and create new tables."""
         db.drop_all()
         db.create_all()
-        click.echo("Updated the database.")
+        click.echo(click.style("Cleared and initialized the database", fg="blue"))
+        click.echo(click.style("Finished...", fg="green"))
 
     @click.command("autodiscover")
     @with_appcontext
     def autodiscover_command():
+        click.echo(click.style("Starting...", fg="green"))
+        click.echo(
+            click.style(
+                "Looking for AnnData (.h5ad) and MuData (.h5mu) objects in "
+                + app.config.get("DATA_PATH"),
+                fg="blue",
+            )
+        )
+        import warnings
+
+        warnings.filterwarnings("ignore")
         from .utils import dataset_utils
 
-        dataset_utils.auto_discover()
-        click.echo("Discovered Datasets.")
+        count = dataset_utils.auto_discover()
+        click.echo(click.style(f"Successfully discovered {count} datasets", fg="blue"))
+        click.echo(click.style("Finished...", fg="green"))
 
     app.cli.add_command(init_db_command)
     app.cli.add_command(clear_init_db_command)

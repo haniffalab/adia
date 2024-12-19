@@ -10,11 +10,13 @@ from adifa.resources.errors import (
     InvalidDatasetIdError,
     DatabaseOperationError,
     DatasetNotExistsError,
+    InvalidModalityError,
 )
 
 
 def get_matrixplot(
     datasetId,
+    modality,
     var_names,
     groupby,
     use_raw=None,
@@ -56,10 +58,50 @@ def get_matrixplot(
     except (ValueError, AttributeError) as e:
         raise DatasetNotExistsError
 
+    if modality == "muon":
+        raise InvalidModalityError
+    try:
+        if dataset.filename.endswith(".h5ad"):
+            adata = current_app.adata[dataset.filename]
+        elif dataset.filename.endswith(".h5mu"):
+            adata = current_app.adata[dataset.filename][modality]
+    except (ValueError, AttributeError) as e:
+        raise DatasetNotExistsError
+
     var_intersection = list(set(adata.var.index) & set(var_names))
 
     if adata.obs[groupby].dtype == "bool":
         adata.obs[groupby] = adata.obs[groupby].astype("str").astype("category")
+
+    plot = sc.pl.matrixplot(
+        adata,
+        var_intersection,
+        groupby,
+        use_raw,
+        log,
+        num_categories,
+        figsize,
+        dendrogram,
+        title,
+        cmap,
+        colorbar_title,
+        gene_symbols,
+        var_group_positions,
+        var_group_labels,
+        var_group_rotation,
+        layer,
+        standard_scale,
+        values_df,
+        swap_axes,
+        show,
+        save,
+        ax,
+        return_fig,
+        vmin,
+        vmax,
+        vcenter,
+        norm,
+    )
 
     plot = sc.pl.matrixplot(
         adata,
