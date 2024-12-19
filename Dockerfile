@@ -8,6 +8,7 @@ WORKDIR /app
 
 COPY ./requirements.txt /app
 
+ENV SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL=True
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 RUN pip install gunicorn
