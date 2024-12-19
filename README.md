@@ -1,7 +1,7 @@
 
 [![tests](https://github.com/haniffalab/adifa/actions/workflows/test-coverage.yml/badge.svg)](https://github.com/haniffalab/adifa/actions/workflows/test-coverage.yml)
-[![build](https://github.com/haniffalab/adifa/actions/workflows/docker-release.yml/badge.svg)](https://github.com/haniffalab/adifa/actions/workflows/docker-release.yml)
-[![docker](https://github.com/haniffalab/adifa/actions/workflows/docker-latest.yml/badge.svg)](https://github.com/haniffalab/adifa/actions/workflows/docker-latest.yml)
+[![build](https://github.com/haniffalab/adifa/actions/workflows/docker-release.yml/badge.svg)](https://hub.docker.com/repository/docker/haniffalab/adifa/)
+[![docker](https://github.com/haniffalab/adifa/actions/workflows/docker-latest.yml/badge.svg)](https://hub.docker.com/repository/docker/haniffalab/adifa/)
 [![sphinx](https://github.com/haniffalab/adifa/actions/workflows/sphinx-build.yml/badge.svg)](https://github.com/haniffalab/adifa/actions/workflows/sphinx-build.yml)
 [![codecov](https://codecov.io/gh/haniffalab/adifa/branch/main/graph/badge.svg?token=RQLL0HKQ5W)](https://codecov.io/gh/haniffalab/adifa)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
