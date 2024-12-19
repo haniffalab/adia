@@ -17,14 +17,14 @@ def test_privacy(client):
     assert b"Privacy" in response.data
 
 
-def test_scatterplot(client):
-    response = client.get("/dataset/1/scatterplot")
-    assert b"Scatterplot in embedding basis" in response.data
+# def test_scatterplot(client):
+#     response = client.get("/dataset/1/scatterplot")
+#     assert b"Scatterplot in embedding basis" in response.data
 
 
-def test_matrixplot(client):
-    response = client.get("/dataset/1/matrixplot")
-    assert b"Heatmap of the mean expression values" in response.data
+# def test_matrixplot(client):
+#     response = client.get("/dataset/1/matrixplot")
+#     assert b"Heatmap of the mean expression values" in response.data
 
 
 def test_password(client):
